@@ -3,38 +3,37 @@ var searchHistory = [];
 var weatherApiRootUrl = 'https://api.openweathermap.org';
 var weatherApiKey = 'a88f74e0552a9043db7d56fd0093c196';
 
-// DOM element references
+// Dom variables
 var searchForm = document.querySelector('#search-form');
 var searchInput = document.querySelector('#search-input');
 var todayContainer = document.querySelector('#today');
 var forecastContainer = document.querySelector('#forecast');
 var searchHistoryContainer = document.querySelector('#history');
 
-// Add timezone plugins to day.js
+// Time Zone plugin
 dayjs.extend(window.dayjs_plugin_utc);
 dayjs.extend(window.dayjs_plugin_timezone);
 
-// Function to display the search history list.
+// function to render search histor
 function renderSearchHistory() {
   searchHistoryContainer.innerHTML = '';
 
-  // Start at end of history array and count down to show the most recent at the top.
+  // for look to iterate through previous searches keeping the most recent at the top
   for (var i = searchHistory.length - 1; i >= 0; i--) {
     var btn = document.createElement('button');
     btn.setAttribute('type', 'button');
     btn.setAttribute('aria-controls', 'today forecast');
     btn.classList.add('history-btn', 'btn-history');
 
-    // `data-search` allows access to city name when click handler is invoked
     btn.setAttribute('data-search', searchHistory[i]);
     btn.textContent = searchHistory[i];
     searchHistoryContainer.append(btn);
   }
 }
 
-// Function to update history in local storage then updates displayed history.
+// local storage
 function appendToHistory(search) {
-  // If there is no search term return the function
+ 
   if (searchHistory.indexOf(search) !== -1) {
     return;
   }
@@ -44,7 +43,7 @@ function appendToHistory(search) {
   renderSearchHistory();
 }
 
-// Function to get search history from local storage
+// get search history from local storage
 function initSearchHistory() {
   var storedHistory = localStorage.getItem('search-history');
   if (storedHistory) {
@@ -53,10 +52,10 @@ function initSearchHistory() {
   renderSearchHistory();
 }
 
-// Function to display the current weather data fetched from OpenWeather api.
+// render current city weather results 
 function renderCurrentWeather(city, weather) {
   var date = dayjs().format('M/D/YYYY');
-  // Store response data from our fetch request in variables
+  // varaible to store data from API fetch
   var tempF = weather.main.temp;
   var windMph = weather.wind.speed;
   var humidity = weather.main.humidity;
@@ -94,8 +93,7 @@ function renderCurrentWeather(city, weather) {
   todayContainer.append(card);
 }
 
-// Function to display a forecast card given an object from open weather api
-// daily forecast.
+// forecast function using data pullsed from api
 function renderForecastCard(forecast) {
   // variables for data from api
   var iconUrl = `https://openweathermap.org/img/w/${forecast.weather[0].icon}.png`;
@@ -104,7 +102,7 @@ function renderForecastCard(forecast) {
   var humidity = forecast.main.humidity;
   var windMph = forecast.wind.speed;
 
-  // Create elements for a card
+  // dyranmic creation of elements for forecast cards
   var col = document.createElement('div');
   var card = document.createElement('div');
   var cardBody = document.createElement('div');
@@ -138,9 +136,9 @@ function renderForecastCard(forecast) {
   forecastContainer.append(col);
 }
 
-// Function to display 5 day forecast.
+// 5 day forecast
 function renderForecast(dailyForecast) {
-  // Create unix timestamps for start and end of 5 day forecast
+  // convert time to unix 
   var startDt = dayjs().add(1, 'day').startOf('day').unix();
   var endDt = dayjs().add(6, 'day').startOf('day').unix();
 
@@ -172,8 +170,7 @@ function renderItems(city, data) {
   renderForecast(data.list);
 }
 
-// Fetches weather data for given location from the Weather Geolocation
-// endpoint; then, calls functions to display current and forecast weather data.
+// API Fetch
 function fetchWeather(location) {
   var { lat } = location;
   var { lon } = location;
@@ -214,7 +211,7 @@ function fetchCoords(search) {
 }
 
 function handleSearchFormSubmit(e) {
-  // Don't continue if there is nothing in the search form
+  // exit look if there is no search input
   if (!searchInput.value) {
     return;
   }
@@ -226,7 +223,7 @@ function handleSearchFormSubmit(e) {
 }
 
 function handleSearchHistoryClick(e) {
-  // Don't do search if current elements is not a search history button
+  
   if (!e.target.matches('.btn-history')) {
     return;
   }
